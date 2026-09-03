@@ -5,7 +5,7 @@ create policy "Users can view their own items"
     on items for select
     using (auth.uid() = user_id);
 
-reate policy "Users can insert their own items"
+create policy "Users can insert their own items"
     on items for insert
     with check (auth.uid() = user_id);
 
