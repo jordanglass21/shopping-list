@@ -1,4 +1,4 @@
-# Aisle Run
+# Shopping List
 
 A shopping list web app with the option to build it from recipes.
 
