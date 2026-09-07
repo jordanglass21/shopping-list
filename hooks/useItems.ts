@@ -63,8 +63,8 @@ export function useItems() {
 
     async function toggleItem(id: number, checked: boolean) {
         //flip it in local state immediately
-            setItems((prev) =>
-                prev.map((item) => (item.id === id ? { ...item, checked } : item))
+        setItems((prev) =>
+            prev.map((item) => (item.id === id ? { ...item, checked } : item))
         );
 
         const { error } = await supabase
@@ -74,8 +74,8 @@ export function useItems() {
 
         if (error) {
             console.error("Failed to toggle item:", error.message);
-                // Roll back on failure
-                setItems((prev) =>
+            // Roll back on failure
+            setItems((prev) =>
                 prev.map((item) => (item.id === id ? { ...item, checked: !checked } : item))
             );
         }
@@ -94,5 +94,23 @@ export function useItems() {
         }
     }
 
-    return { items, categories, loading, addItem, toggleItem, deleteItem };
+    async function updateCategory(id: number, category_id: number) {
+        // Optimistic: update local state immediately
+        const previous = items;
+        setItems((prev) =>
+            prev.map((item) => (item.id === id ? { ...item, category_id } : item))
+        );
+
+        const { error } = await supabase
+            .from("items")
+            .update({ category_id })
+            .eq("id", id);
+
+        if (error) {
+            console.error("Failed to update category:", error.message);
+            setItems(previous); // roll back
+        }
+    }
+
+    return { items, categories, loading, addItem, toggleItem, deleteItem, updateCategory };
 }

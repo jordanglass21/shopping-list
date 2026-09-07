@@ -11,8 +11,7 @@ export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-
-  const { items, categories, loading: itemsLoading, addItem, toggleItem, deleteItem} = useItems();
+  const { items, categories, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory } = useItems();
   const [newName, setNewName] = useState("");
   const [newQty, setNewQty] = useState("");
 
@@ -47,11 +46,11 @@ export default function Home() {
   }
 
   const grouped = categories
-  .map((cat) => ({
-    category: cat,
-    items: items.filter((item) => item.category_id === cat.id),
-  }))
-  .filter((group) => group.items.length > 0);
+    .map((cat) => ({
+      category: cat,
+      items: items.filter((item) => item.category_id === cat.id),
+    }))
+    .filter((group) => group.items.length > 0);
 
   if (loading) {
     return (
@@ -122,12 +121,14 @@ export default function Home() {
                 </p>
                 <ul className="space-y-2">
                   {group.items.map((item) => (
-                    <ItemRow
-                      key={item.id}
-                      item={item}
-                      onToggle={toggleItem}
-                      onDelete={deleteItem}
-                    />
+                  <ItemRow
+                    key={item.id}
+                    item={item}
+                    categories={categories}
+                    onToggle={toggleItem}
+                    onDelete={deleteItem}
+                    onChangeCategory={updateCategory}
+                  />
                   ))}
                 </ul>
               </div>
