@@ -15,5 +15,6 @@ export type List = {
     user_id: string;
     name: string;
     is_template: boolean;
+    source_template_id: number | null;
     created_at: string;
 };

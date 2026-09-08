@@ -29,7 +29,14 @@ export default function Home() {
 
   const router = useRouter();
   const { importRecipe } = useRecipeImport();
+  
   const currentList = lists.find((l) => l.id === currentListId);
+  useEffect(() => {
+    if (currentList?.source_template_id != null) {
+      setLoadedTemplateId(currentList.source_template_id);
+    }
+  }, [currentList]);
+
   const loadedTemplate = lists.find((l) => l.id === loadedTemplateId);
   const displayName = loadedTemplate?.name ?? currentList?.name ?? "My List";
   const { items, categories, recipes, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory, clearList } =
@@ -89,7 +96,17 @@ export default function Home() {
   async function handleClear() {
     if (items.length === 0) return;
     const ok = window.confirm("Are you sure you want to clear the entire List?");
-    if (ok) await clearList();
+    if (!ok) return;
+
+    await clearList();
+
+    if (currentListId != null) {
+      await supabase
+        .from("lists")
+        .update({ name: "My List", source_template_id: null })
+        .eq("id", currentListId);
+    }
+    setLoadedTemplateId(null);
   }
 
   async function handleDeleteList(id: number, name: string) {
@@ -107,9 +124,14 @@ export default function Home() {
     );
     if (!ok) return;
 
-    // Clear the working list we're actually viewing (by its own id),
-    // then delete the saved template.
-    if (currentListId != null) await clearList(currentListId);
+    if (currentListId != null) {
+      await clearList(currentListId);
+      // Reset the working list's name and unlink it, so the title returns to default
+      await supabase
+        .from("lists")
+        .update({ name: "My List", source_template_id: null })
+        .eq("id", currentListId);
+    }
     await deleteList(tmpl.id);
     setLoadedTemplateId(null);
   }

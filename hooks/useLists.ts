@@ -28,7 +28,8 @@ export function useLists() {
         setLists(data ?? []);
 
         // Default current list to the first non-template list
-        const working = data?.find((l) => !l.is_template);
+        const workingLists = (data ?? []).filter((l) => !l.is_template);
+        const working = workingLists[workingLists.length - 1]; // newest
         if (working) setCurrentListId(working.id);
 
         setLoading(false);
@@ -80,7 +81,7 @@ export function useLists() {
         // Create a fresh working list
         const { data: working, error: listErr } = await supabase
             .from("lists")
-            .insert({ user_id: user.id, name: workingName, is_template: false })
+            .insert({ user_id: user.id, name: workingName, is_template: false, source_template_id: templateId })
             .select()
             .single();
         if (listErr || !working) {
