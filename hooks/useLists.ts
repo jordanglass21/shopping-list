@@ -53,7 +53,7 @@ export function useLists() {
         // Copy the source list's items into the template (unchecked)
         const { data: sourceItems } = await supabase
             .from("items")
-            .select("name, quantity, category_id, user_id")
+            .select("name, quantity, category_id, user_id, recipe_id")
             .eq("list_id", sourceListId);
 
         if (sourceItems && sourceItems.length > 0) {
@@ -91,7 +91,7 @@ export function useLists() {
         // Copy template items into it, unchecked
         const { data: templateItems } = await supabase
             .from("items")
-            .select("name, quantity, category_id, user_id")
+            .select("name, quantity, category_id, user_id, recipe_id")
             .eq("list_id", templateId);
 
         if (templateItems && templateItems.length > 0) {
