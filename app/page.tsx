@@ -4,14 +4,27 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useItems } from "@/hooks/useItems";
-import type { User } from "@supabase/supabase-js";
+import { useLists } from "@/hooks/useLists";
 import { ItemRow } from "@/components/ItemRow";
+import type { User } from "@supabase/supabase-js";
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const { items, categories, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory } = useItems();
+
+  const {
+    lists,
+    currentListId,
+    setCurrentListId,
+    loading: listsLoading,
+    saveAsTemplate,
+    loadTemplate,
+  } = useLists();
+
+  const { items, categories, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory } =
+    useItems(currentListId);
+
   const [newName, setNewName] = useState("");
   const [newQty, setNewQty] = useState("");
 
@@ -45,12 +58,21 @@ export default function Home() {
     setNewQty("");
   }
 
+  async function handleSaveAs() {
+    if (currentListId == null) return;
+    const name = window.prompt("Save this list as:");
+    if (!name || !name.trim()) return;
+    await saveAsTemplate(name.trim(), currentListId);
+  }
+
   const grouped = categories
     .map((cat) => ({
       category: cat,
       items: items.filter((item) => item.category_id === cat.id),
     }))
     .filter((group) => group.items.length > 0);
+
+  const templates = lists.filter((l) => l.is_template);
 
   if (loading) {
     return (
@@ -71,15 +93,40 @@ export default function Home() {
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-sm font-medium text-white">
               {items.length}
             </span>
-            <button
-              onClick={handleLogout}
-              className="text-sm text-stone-400 hover:text-stone-600"
-            >
+            <button onClick={handleLogout} className="text-sm text-stone-400 hover:text-stone-600">
               Log out
             </button>
           </div>
         </div>
         <p className="mb-6 text-xs text-stone-400">{user.email}</p>
+
+        {/* Saved lists bar */}
+        <div className="mb-6 flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleSaveAs}
+            className="rounded-lg bg-stone-800 px-3 py-1.5 text-sm text-white transition hover:bg-stone-700"
+          >
+            Save as…
+          </button>
+
+          {templates.length > 0 && (
+            <select
+              value=""
+              onChange={(e) => {
+                const id = Number(e.target.value);
+                if (id) loadTemplate(id);
+              }}
+              className="rounded-lg bg-white px-3 py-1.5 text-sm text-stone-600 outline-none focus:ring-2 focus:ring-amber-400"
+            >
+              <option value="">Load saved list…</option>
+              {templates.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
 
         {/* Add item */}
         <div className="mb-6 flex gap-2">
@@ -106,7 +153,7 @@ export default function Home() {
         </div>
 
         {/* List */}
-        {itemsLoading ? (
+        {itemsLoading || listsLoading ? (
           <p className="text-stone-400">Loading items…</p>
         ) : items.length === 0 ? (
           <div className="rounded-2xl bg-white px-4 py-10 text-center text-stone-400">
@@ -121,14 +168,14 @@ export default function Home() {
                 </p>
                 <ul className="space-y-2">
                   {group.items.map((item) => (
-                  <ItemRow
-                    key={item.id}
-                    item={item}
-                    categories={categories}
-                    onToggle={toggleItem}
-                    onDelete={deleteItem}
-                    onChangeCategory={updateCategory}
-                  />
+                    <ItemRow
+                      key={item.id}
+                      item={item}
+                      categories={categories}
+                      onToggle={toggleItem}
+                      onDelete={deleteItem}
+                      onChangeCategory={updateCategory}
+                    />
                   ))}
                 </ul>
               </div>

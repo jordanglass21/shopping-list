@@ -2,18 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import type { Item } from "@/types"
+import type { Item } from "@/types";
 import { guessCategory } from "@/lib/categorize";
 
-export function useItems() {
+export function useItems(currentListId: number | null) {
     const [items, setItems] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
 
-    // fetch users items on mount
+    // fetch the current list's items whenever the current list changes
     useEffect(() => {
-        fetchItems();
-    }, []);
+        if (currentListId != null) fetchItems();
+    }, [currentListId]);
 
     // fetch categories on mount
     useEffect(() => {
@@ -27,6 +27,7 @@ export function useItems() {
         const { data, error } = await supabase
             .from("items")
             .select("*")
+            .eq("list_id", currentListId)
             .order("created_at", { ascending: false });
 
         if (error) {
@@ -41,7 +42,7 @@ export function useItems() {
         const {
             data: { user },
         } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user || currentListId == null) return;
 
         // Guess the category name, then find its id
         const guessedName = guessCategory(name);
@@ -50,7 +51,7 @@ export function useItems() {
 
         const { data, error } = await supabase
             .from("items")
-            .insert({ name, quantity, user_id: user.id, category_id })
+            .insert({ name, quantity, user_id: user.id, category_id, list_id: currentListId })
             .select()
             .single();
 
@@ -62,7 +63,7 @@ export function useItems() {
     }
 
     async function toggleItem(id: number, checked: boolean) {
-        //flip it in local state immediately
+        // flip it in local state immediately
         setItems((prev) =>
             prev.map((item) => (item.id === id ? { ...item, checked } : item))
         );
@@ -95,7 +96,7 @@ export function useItems() {
     }
 
     async function updateCategory(id: number, category_id: number) {
-        // Optimistic: update local state immediately
+        // update local state immediately
         const previous = items;
         setItems((prev) =>
             prev.map((item) => (item.id === id ? { ...item, category_id } : item))

@@ -7,3 +7,11 @@ export type Item = {
     category_id: number | null;
     created_at: string;
 };
+
+export type List = {
+    id: number;
+    user_id: string;
+    name: string;
+    is_template: boolean;
+    created_at: string;
+};
