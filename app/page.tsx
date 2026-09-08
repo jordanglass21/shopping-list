@@ -24,6 +24,7 @@ export default function Home() {
     loading: listsLoading,
     saveAsTemplate,
     loadTemplate,
+    deleteList
   } = useLists();
 
   const { items, categories, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory, clearList } =
@@ -31,6 +32,7 @@ export default function Home() {
 
   const [newName, setNewName] = useState("");
   const [newQty, setNewQty] = useState("");
+  const [showManage, setShowManage] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -73,6 +75,11 @@ export default function Home() {
     if (items.length === 0) return 0;
     const ok = window.confirm("Are you sure you want to clear the entire List?");
     if (ok) await clearList();
+  }
+
+  async function handleDeleteList(id: number, name: string) {
+    const ok = window.confirm(`Delete saved list "${name}"? This can't be undone.`);
+    if (ok) await deleteList(id);
   }
 
   const grouped = categories
@@ -132,6 +139,37 @@ export default function Home() {
           >
             Import recipe
           </button>
+
+          {templates.length > 0 && (
+            <button
+              onClick={() => setShowManage((s) => !s)}
+              className="rounded-lg bg-stone-200 px-3 py-1.5 text-sm text-stone-700 transition hover:bg-stone-300"
+            >
+              Manage
+            </button>
+          )}
+
+          {showManage && templates.length > 0 && (
+            <div className="mb-6 rounded-2xl bg-white p-3">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-stone-500">
+                Saved lists
+              </p>
+              <ul className="space-y-1">
+                {templates.map((t) => (
+                  <li key={t.id} className="flex items-center justify-between px-1 py-1.5">
+                    <span className="text-stone-800">{t.name}</span>
+                    <button
+                      onClick={() => handleDeleteList(t.id, t.name)}
+                      className="text-stone-300 transition hover:text-red-400"
+                      aria-label={`Delete ${t.name}`}
+                    >
+                      ✕
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {templates.length > 0 && (
             <select

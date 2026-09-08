@@ -108,5 +108,17 @@ export function useLists() {
         return working.id;
     }
 
-    return { lists, currentListId, setCurrentListId, loading, saveAsTemplate, loadTemplate };
+    async function deleteList(listId: number) {
+        const previous = lists;
+        setLists((prev) => prev.filter((l) => l.id !== listId));
+
+        const { error } = await supabase.from("lists").delete().eq("id", listId);
+
+        if (error) {
+            console.error("Failed to delete list:", error.message);
+            setLists(previous); // roll back
+        }
+    }
+
+    return { lists, currentListId, setCurrentListId, loading, saveAsTemplate, loadTemplate, deleteList };
 }
