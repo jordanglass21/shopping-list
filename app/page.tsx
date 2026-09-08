@@ -7,11 +7,15 @@ import { useItems } from "@/hooks/useItems";
 import { useLists } from "@/hooks/useLists";
 import { ItemRow } from "@/components/ItemRow";
 import type { User } from "@supabase/supabase-js";
+import { RecipeImport } from "@/components/RecipeImport";
+import { useRecipeImport } from "@/hooks/useRecipeImport";
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { importRecipe } = useRecipeImport();
+  const [showImport, setShowImport] = useState(false);
 
   const {
     lists,
@@ -109,6 +113,13 @@ export default function Home() {
             Save as…
           </button>
 
+          <button
+            onClick={() => setShowImport(true)}
+            className="rounded-lg bg-amber-500 px-3 py-1.5 text-sm text-white transition hover:bg-amber-600"
+          >
+            Import recipe
+          </button>
+
           {templates.length > 0 && (
             <select
               value=""
@@ -183,6 +194,15 @@ export default function Home() {
           </div>
         )}
       </div>
+      {showImport && (
+      <RecipeImport
+        categories={categories}
+        currentListId={currentListId}
+        onImport={importRecipe}
+        onClose={() => setShowImport(false)}
+        onDone={() => window.location.reload()}
+      />
+    )}
     </main>
   );
 }
