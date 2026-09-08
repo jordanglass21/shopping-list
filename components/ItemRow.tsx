@@ -6,18 +6,22 @@ import type { Item } from "@/types";
 type ItemRowProps = {
   item: Item;
   categories: { id: number; name: string }[];
+  recipes: { id: number; name: string; color: string }[];
   onToggle: (id: number, checked: boolean) => void;
   onDelete: (id: number) => void;
   onChangeCategory: (id: number, categoryId: number) => void;
 };
 
-export function ItemRow({ item, categories, onToggle, onDelete, onChangeCategory }: ItemRowProps) {
+export function ItemRow({ item, categories, recipes, onToggle, onDelete, onChangeCategory }: ItemRowProps) {
   const [isEditing, setIsEditing] = useState(false);
-
   const currentCategory = categories?.find((c) => c.id === item.category_id);
+  const recipe = recipes?.find((r) => r.id === item.recipe_id);
 
   return (
-    <li className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3">
+    <li
+      className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3"
+      style={recipe ? { borderLeft: `4px solid ${recipe.color}` } : undefined}
+    >
       <button
         onClick={() => onToggle(item.id, !item.checked)}
         aria-label={item.checked ? "Mark as not bought" : "Mark as bought"}
@@ -36,8 +40,17 @@ export function ItemRow({ item, categories, onToggle, onDelete, onChangeCategory
 
       {item.quantity && <span className="text-sm text-stone-400">· {item.quantity}</span>}
 
+      {recipe && (
+        <span
+          className="ml-auto rounded px-1.5 py-0.5 text-[10px] font-medium"
+          style={{ backgroundColor: `${recipe.color}20`, color: recipe.color }}
+        >
+          {recipe.name}
+        </span>
+      )}
+
       {/* Category: quiet label by default, picker when tapped */}
-      <div className="ml-auto">
+      <div className={recipe ? "" : "ml-auto"}>
         {isEditing ? (
           <select
             autoFocus

@@ -11,7 +11,7 @@ import { RecipeImport } from "@/components/RecipeImport";
 import { useRecipeImport } from "@/hooks/useRecipeImport";
 
 export default function Home() {
-  
+
   const {
     lists,
     currentListId,
@@ -24,17 +24,19 @@ export default function Home() {
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showImport, setShowImport] = useState(false);
+  const [loadedTemplateId, setLoadedTemplateId] = useState<number | null>(null);
+
   const router = useRouter();
   const { importRecipe } = useRecipeImport();
-  const [showImport, setShowImport] = useState(false);
   const currentList = lists.find((l) => l.id === currentListId);
-
-  const { items, categories, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory, clearList } =
+  const loadedTemplate = lists.find((l) => l.id === loadedTemplateId);
+  const displayName = loadedTemplate?.name ?? currentList?.name ?? "My List";
+  const { items, categories, recipes, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory, clearList } =
     useItems(currentListId);
 
   const [newName, setNewName] = useState("");
   const [newQty, setNewQty] = useState("");
-  const [showManage, setShowManage] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -68,13 +70,24 @@ export default function Home() {
 
   async function handleSaveAs() {
     if (currentListId == null) return;
-    const name = window.prompt("Save this list as:");
+    const itemWithRecipe = items.find((it) => it.recipe_id != null);
+    const suggested = itemWithRecipe
+      ? recipes.find((r) => r.id === itemWithRecipe.recipe_id)?.name ?? ""
+      : "";
+    const name = window.prompt("Save this list as:", suggested);
     if (!name || !name.trim()) return;
-    await saveAsTemplate(name.trim(), currentListId);
+
+    const template = await saveAsTemplate(name.trim(), currentListId);
+    if (template) setLoadedTemplateId(template.id);   // ← now "linked" to the saved list
+  }
+
+  async function handleLoadTemplate(templateId: number) {
+    await loadTemplate(templateId);
+    setLoadedTemplateId(templateId);
   }
 
   async function handleClear() {
-    if (items.length === 0) return 0;
+    if (items.length === 0) return;
     const ok = window.confirm("Are you sure you want to clear the entire List?");
     if (ok) await clearList();
   }
@@ -82,6 +95,23 @@ export default function Home() {
   async function handleDeleteList(id: number, name: string) {
     const ok = window.confirm(`Delete saved list "${name}"? This can't be undone.`);
     if (ok) await deleteList(id);
+  }
+
+  async function handleDeleteLoadedList() {
+    if (loadedTemplateId == null) return;
+    const tmpl = templates.find((t) => t.id === loadedTemplateId);
+    if (!tmpl) return;
+
+    const ok = window.confirm(
+      `Delete "${tmpl.name}" and clear the current list?`
+    );
+    if (!ok) return;
+
+    // Clear the working list we're actually viewing (by its own id),
+    // then delete the saved template.
+    if (currentListId != null) await clearList(currentListId);
+    await deleteList(tmpl.id);
+    setLoadedTemplateId(null);
   }
 
   const grouped = categories
@@ -107,9 +137,7 @@ export default function Home() {
       <div className="mx-auto max-w-lg">
         {/* Header */}
         <div className="mb-1 flex items-center justify-between">
-          <h1 className="text-2xl font-medium text-stone-800">
-            {currentList?.name ?? "My list"}
-          </h1>
+          <h1 className="text-2xl font-medium text-stone-800">{displayName}</h1>
           <div className="flex items-center gap-3">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-sm font-medium text-white">
               {items.length}
@@ -145,42 +173,11 @@ export default function Home() {
           </button>
 
           {templates.length > 0 && (
-            <button
-              onClick={() => setShowManage((s) => !s)}
-              className="rounded-lg bg-stone-200 px-3 py-1.5 text-sm text-stone-700 transition hover:bg-stone-300"
-            >
-              Manage
-            </button>
-          )}
-
-          {showManage && templates.length > 0 && (
-            <div className="mb-6 rounded-2xl bg-white p-3">
-              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-stone-500">
-                Saved lists
-              </p>
-              <ul className="space-y-1">
-                {templates.map((t) => (
-                  <li key={t.id} className="flex items-center justify-between px-1 py-1.5">
-                    <span className="text-stone-800">{t.name}</span>
-                    <button
-                      onClick={() => handleDeleteList(t.id, t.name)}
-                      className="text-stone-300 transition hover:text-red-400"
-                      aria-label={`Delete ${t.name}`}
-                    >
-                      ✕
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {templates.length > 0 && (
             <select
               value=""
               onChange={(e) => {
                 const id = Number(e.target.value);
-                if (id) loadTemplate(id);
+                if (id) handleLoadTemplate(id);
               }}
               className="rounded-lg bg-white px-3 py-1.5 text-sm text-stone-600 outline-none focus:ring-2 focus:ring-amber-400"
             >
@@ -191,6 +188,17 @@ export default function Home() {
                 </option>
               ))}
             </select>
+          )}
+
+          {loadedTemplateId != null && (
+            <button
+              onClick={handleDeleteLoadedList}
+              className="rounded-lg bg-stone-200 px-2 py-1.5 text-sm text-stone-500 transition hover:bg-red-100 hover:text-red-600"
+              aria-label="Delete this saved list"
+              title="Delete this saved list"
+            >
+              🗑
+            </button>
           )}
         </div>
 
@@ -238,6 +246,7 @@ export default function Home() {
                       key={item.id}
                       item={item}
                       categories={categories}
+                      recipes={recipes}
                       onToggle={toggleItem}
                       onDelete={deleteItem}
                       onChangeCategory={updateCategory}

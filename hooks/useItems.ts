@@ -9,6 +9,7 @@ export function useItems(currentListId: number | null) {
     const [items, setItems] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+    const [recipes, setRecipes] = useState<{ id: number; name: string; color: string }[]>([]);
 
     // fetch the current list's items whenever the current list changes
     useEffect(() => {
@@ -21,6 +22,15 @@ export function useItems(currentListId: number | null) {
             .from("categories")
             .select("id, name")
             .then(({ data }) => setCategories(data ?? []));
+    }, []);
+
+
+    // fetch recipes on mount
+    useEffect(() => {
+        supabase
+            .from("recipes")
+            .select("id, name, color")
+            .then(({ data }) => setRecipes(data ?? []));
     }, []);
 
     async function fetchItems() {
@@ -113,8 +123,9 @@ export function useItems(currentListId: number | null) {
         }
     }
 
-    async function clearList() {
-        if (currentListId == null) return;
+    async function clearList(listId?: number) {
+        const target = listId ?? currentListId;
+        if (target == null) return;
 
         const previous = items;
         setItems([]); // empty UI immediately
@@ -122,7 +133,7 @@ export function useItems(currentListId: number | null) {
         const { error } = await supabase
             .from("items")
             .delete()
-            .eq("list_id", currentListId);
+            .eq("list_id", target);
 
         if (error) {
             console.error("Failed to clear list:", error.message);
@@ -130,5 +141,5 @@ export function useItems(currentListId: number | null) {
         }
     }
 
-    return { items, categories, loading, addItem, toggleItem, deleteItem, updateCategory, clearList };
+    return { items, categories, recipes, loading, addItem, toggleItem, deleteItem, updateCategory, clearList };
 }

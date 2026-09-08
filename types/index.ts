@@ -5,6 +5,8 @@ export type Item = {
     quantity: string | null;
     checked: boolean;
     category_id: number | null;
+    recipe_id: number | null;
+    list_id: number | null;
     created_at: string;
 };
 
