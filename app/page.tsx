@@ -11,12 +11,7 @@ import { RecipeImport } from "@/components/RecipeImport";
 import { useRecipeImport } from "@/hooks/useRecipeImport";
 
 export default function Home() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const { importRecipe } = useRecipeImport();
-  const [showImport, setShowImport] = useState(false);
-
+  
   const {
     lists,
     currentListId,
@@ -26,6 +21,13 @@ export default function Home() {
     loadTemplate,
     deleteList
   } = useLists();
+
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const { importRecipe } = useRecipeImport();
+  const [showImport, setShowImport] = useState(false);
+  const currentList = lists.find((l) => l.id === currentListId);
 
   const { items, categories, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory, clearList } =
     useItems(currentListId);
@@ -105,7 +107,9 @@ export default function Home() {
       <div className="mx-auto max-w-lg">
         {/* Header */}
         <div className="mb-1 flex items-center justify-between">
-          <h1 className="text-2xl font-medium text-stone-800">My list</h1>
+          <h1 className="text-2xl font-medium text-stone-800">
+            {currentList?.name ?? "My list"}
+          </h1>
           <div className="flex items-center gap-3">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-sm font-medium text-white">
               {items.length}
