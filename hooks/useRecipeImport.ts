@@ -5,8 +5,14 @@ import { guessCategory } from "@/lib/categorize";
 import type { ParsedIngredient } from "@/lib/parseRecipe";
 
 const RECIPE_COLORS = [
-  "#F59E0B", "#10B981", "#3B82F6", "#EF4444",
-  "#8B5CF6", "#EC4899", "#14B8A6", "#F97316",
+  "#D97706", // amber
+  "#65A30D", // olive green
+  "#0D9488", // muted teal
+  "#0284C7", // dusty blue
+  "#7C3AED", // muted violet
+  "#DB2777", // warm rose
+  "#DC2626", // brick red
+  "#EA580C", // burnt orange
 ];
 
 export function useRecipeImport() {
