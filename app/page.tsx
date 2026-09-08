@@ -26,7 +26,7 @@ export default function Home() {
     loadTemplate,
   } = useLists();
 
-  const { items, categories, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory } =
+  const { items, categories, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory, clearList } =
     useItems(currentListId);
 
   const [newName, setNewName] = useState("");
@@ -67,6 +67,12 @@ export default function Home() {
     const name = window.prompt("Save this list as:");
     if (!name || !name.trim()) return;
     await saveAsTemplate(name.trim(), currentListId);
+  }
+
+  async function handleClear() {
+    if (items.length === 0) return 0;
+    const ok = window.confirm("Are you sure you want to clear the entire List?");
+    if (ok) await clearList();
   }
 
   const grouped = categories
@@ -111,6 +117,13 @@ export default function Home() {
             className="rounded-lg bg-stone-800 px-3 py-1.5 text-sm text-white transition hover:bg-stone-700"
           >
             Save as…
+          </button>
+
+          <button
+            onClick={handleClear}
+            className="rounded-lg bg-stone-200 px-3 py-1.5 text-sm text-stone-700 transition hover:bg-red-100 hover:text-red-600"
+          >
+            Clear
           </button>
 
           <button
@@ -195,14 +208,14 @@ export default function Home() {
         )}
       </div>
       {showImport && (
-      <RecipeImport
-        categories={categories}
-        currentListId={currentListId}
-        onImport={importRecipe}
-        onClose={() => setShowImport(false)}
-        onDone={() => window.location.reload()}
-      />
-    )}
+        <RecipeImport
+          categories={categories}
+          currentListId={currentListId}
+          onImport={importRecipe}
+          onClose={() => setShowImport(false)}
+          onDone={() => window.location.reload()}
+        />
+      )}
     </main>
   );
 }

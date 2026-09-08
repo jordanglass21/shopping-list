@@ -113,5 +113,22 @@ export function useItems(currentListId: number | null) {
         }
     }
 
-    return { items, categories, loading, addItem, toggleItem, deleteItem, updateCategory };
+    async function clearList() {
+        if (currentListId == null) return;
+
+        const previous = items;
+        setItems([]); // empty UI immediately
+
+        const { error } = await supabase
+            .from("items")
+            .delete()
+            .eq("list_id", currentListId);
+
+        if (error) {
+            console.error("Failed to clear list:", error.message);
+            setItems(previous);
+        }
+    }
+
+    return { items, categories, loading, addItem, toggleItem, deleteItem, updateCategory, clearList };
 }
