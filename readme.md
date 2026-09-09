@@ -2,8 +2,7 @@
 
 A grocery list web app that turns recipes into shopping lists, sorts items by supermarket aisle, and syncs across devices.
 
-<img width="705" height="821" alt="Screenshot 2026-09-09 at 5 28 15 PM" src="https://github.com/user-attachments/assets/549066aa-09d2-46aa-84ce-bebece30f5d4" />
-
+<img width="656" height="817" alt="Screenshot 2026-09-09 at 5 07 16 PM" src="https://github.com/user-attachments/assets/fb8a8725-89d4-40d4-9c60-c9b53c27f06c" />
 
 **Live demo:** [list.jordanglass.dev](https://list.jordanglass.dev)
 
