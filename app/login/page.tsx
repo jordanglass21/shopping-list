@@ -15,6 +15,11 @@ export default function LoginPage() {
     });
   }
 
+  async function handleGuest() {
+    await supabase.auth.signInAnonymously();
+    window.location.href = "/";
+  }
+
   async function handleEmail() {
     if (!email.trim()) return;
     setStatus("sending");
@@ -76,6 +81,13 @@ export default function LoginPage() {
               >
                 <GoogleIcon />
                 Continue with Google
+              </button>
+
+              <button
+                onClick={handleGuest}
+                className="mt-3 w-full rounded-xl bg-ink py-3 text-[15px] text-cream transition hover:bg-ink/90"
+              >
+                Try it as a guest
               </button>
 
               {!showEmail ? (
