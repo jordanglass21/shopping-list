@@ -34,9 +34,6 @@ export default function LoginPage() {
     <main className="min-h-screen bg-cream px-6 py-16">
       <div className="mx-auto max-w-md">
         {/* Intro */}
-        <p className="mb-3 text-[10px] uppercase tracking-[0.2em] text-stone">
-          A shopping list
-        </p>
         <h1 className="font-serif text-4xl leading-[1.05] text-ink sm:text-5xl">
           Plan, shop, cook.
         </h1>
