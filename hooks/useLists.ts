@@ -27,10 +27,27 @@ export function useLists() {
 
         setLists(data ?? []);
 
-        // Default current list to the first non-template list
         const workingLists = (data ?? []).filter((l) => !l.is_template);
-        const working = workingLists[workingLists.length - 1]; // newest
-        if (working) setCurrentListId(working.id);
+
+        if (workingLists.length === 0) {
+            // Brand-new user (e.g. a guest) has no list yet — create a default one.
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: newList } = await supabase
+                    .from("lists")
+                    .insert({ user_id: user.id, name: "My List", is_template: false })
+                    .select()
+                    .single();
+                if (newList) {
+                    setLists((prev) => [...prev, newList]);
+                    setCurrentListId(newList.id);
+                }
+            }
+        } else {
+            // Returning user — default to their newest working list.
+            const working = workingLists[workingLists.length - 1];
+            setCurrentListId(working.id);
+        }
 
         setLoading(false);
     }
