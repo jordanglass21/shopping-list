@@ -116,10 +116,6 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
         </span>
       )}
 
-      <span className={`text-xs text-stone-400 ${recipe ? "" : "ml-auto"}`}>
-        {currentCategory?.name ?? "—"}
-      </span>
-
       <button
         onClick={startEdit}
         aria-label="Edit item"
