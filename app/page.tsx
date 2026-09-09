@@ -151,9 +151,6 @@ export default function Home() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-stone">
-              Shopping
-            </p>
             <h1 className="font-serif text-4xl leading-none text-ink">
               {displayName}
             </h1>

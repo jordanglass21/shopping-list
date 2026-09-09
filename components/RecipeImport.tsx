@@ -89,7 +89,7 @@ export function RecipeImport({
                         />
 
                         <div className="mb-5 flex items-center gap-2">
-                            <span className="mr-1 text-[10px] uppercase tracking-wide text-stone">Colour</span>
+                            <span className="mr-1 text-[10px] uppercase tracking-wide text-stone">Color</span>
                             {RECIPE_COLORS.map((c) => (
                                 <button
                                     key={c}
