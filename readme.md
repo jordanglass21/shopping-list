@@ -2,7 +2,10 @@
 
 A grocery list web app that turns recipes into shopping lists, sorts items by supermarket aisle, and syncs across devices.
 
-**Live demo:** [shopping-list-oosm.vercel.app](https://shopping-list-oosm.vercel.app)
+<img width="656" height="817" alt="Screenshot 2026-09-09 at 5 07 16 PM" src="https://github.com/user-attachments/assets/fb8a8725-89d4-40d4-9c60-c9b53c27f06c" />
+
+
+**Live demo:** [list.jordanglass.dev](https://list.jordanglass.dev)
 
 ## Features
 
@@ -11,6 +14,10 @@ A grocery list web app that turns recipes into shopping lists, sorts items by su
 - **Saved lists** — save a list and reload it later as a fresh copy.
 - **Check-off & progress** — mark items bought with a running "X left" count.
 - **Authentication** — one-tap Google sign-in with a magic-link email fallback.
+
+<img width="757" height="762" alt="Screenshot 2026-09-09 at 5 28 50 PM" src="https://github.com/user-attachments/assets/4a30bbdd-6c42-438d-8886-5209623859f6" />
+
+<img width="663" height="740" alt="Screenshot 2026-09-09 at 5 06 36 PM" src="https://github.com/user-attachments/assets/6572c035-da68-4c3c-8ac5-39fd122aa238" />
 
 ## Tech stack
 
