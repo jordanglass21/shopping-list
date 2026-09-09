@@ -29,7 +29,7 @@ export default function Home() {
 
   const router = useRouter();
   const { importRecipe } = useRecipeImport();
-  
+
   const currentList = lists.find((l) => l.id === currentListId);
   useEffect(() => {
     if (currentList?.source_template_id != null) {
@@ -174,10 +174,17 @@ export default function Home() {
         {/* Saved lists bar */}
         <div className="mb-6 flex flex-wrap items-center gap-2">
           <button
+            onClick={() => setShowImport(true)}
+            className="rounded-lg bg-amber-500 px-3 py-1.5 text-sm text-white transition hover:bg-amber-600"
+          >
+            Import recipe
+          </button>
+
+          <button
             onClick={handleSaveAs}
             className="rounded-lg bg-stone-800 px-3 py-1.5 text-sm text-white transition hover:bg-stone-700"
           >
-            Save as…
+            Save
           </button>
 
           <button
@@ -187,12 +194,6 @@ export default function Home() {
             Clear
           </button>
 
-          <button
-            onClick={() => setShowImport(true)}
-            className="rounded-lg bg-amber-500 px-3 py-1.5 text-sm text-white transition hover:bg-amber-600"
-          >
-            Import recipe
-          </button>
 
           {templates.length > 0 && (
             <select
@@ -215,11 +216,11 @@ export default function Home() {
           {loadedTemplateId != null && (
             <button
               onClick={handleDeleteLoadedList}
-              className="rounded-lg bg-stone-200 px-2 py-1.5 text-sm text-stone-500 transition hover:bg-red-100 hover:text-red-600"
+              className="rounded-lg bg-stone-200 px-3 py-1.5 text-sm text-stone-700 transition hover:bg-red-100 hover:text-red-600"
               aria-label="Delete this saved list"
               title="Delete this saved list"
             >
-              🗑
+              Delete
             </button>
           )}
         </div>
