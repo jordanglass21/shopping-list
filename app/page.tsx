@@ -270,7 +270,7 @@ export default function Home() {
           <div className="space-y-6">
             {grouped.map((group) => (
               <div key={group.category.id}>
-                <p className="mb-2 text-[10px] uppercase tracking-[0.18em] text-neutral-400">
+                <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-neutral-400">
                   {group.category.name}
                 </p>
                 <ul>
@@ -312,7 +312,7 @@ export default function Home() {
         onConfirm={(value) => dialog?.onConfirm(value)}
         onCancel={() => setDialog(null)}
       />
-      
+
     </main>
   );
 }

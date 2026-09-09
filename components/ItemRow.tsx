@@ -33,6 +33,7 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
     setIsEditing(false);
   }
 
+  // --- EDIT MODE ---
   if (isEditing) {
     return (
       <li className="flex flex-col gap-2 border-b border-hairline py-3">
@@ -81,20 +82,22 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
     );
   }
 
+  // --- DISPLAY MODE ---
   return (
-    <li className="group flex items-center gap-3 border-b border-hairline py-2.5">      <button
-      onClick={() => onToggle(item.id, !item.checked)}
-      aria-label={item.checked ? "Mark as not bought" : "Mark as bought"}
-      className="shrink-0"
-    >
-      <span
-        className={
-          item.checked
-            ? "block h-[9px] w-[9px] rounded-full bg-neutral-300"
-            : "block h-[9px] w-[9px] rounded-full border-[1.5px] border-neutral-300 transition hover:border-ink"
-        }
-      />
-    </button>
+    <li className="group flex items-center gap-3 border-b border-hairline py-2.5">
+      <button
+        onClick={() => onToggle(item.id, !item.checked)}
+        aria-label={item.checked ? "Mark as not bought" : "Mark as bought"}
+        className="shrink-0"
+      >
+        <span
+          className={
+            item.checked
+              ? "block h-[9px] w-[9px] rounded-full bg-neutral-300"
+              : "block h-[9px] w-[9px] rounded-full border-[1.5px] border-neutral-300 transition hover:border-ink"
+          }
+        />
+      </button>
 
       <span
         className={
@@ -110,18 +113,11 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
         <span className="text-sm text-stone-light">{item.quantity}</span>
       )}
 
-      {recipe && (
-        <span
-          className="ml-auto block h-2 w-2 shrink-0 rounded-full"
-          style={{ backgroundColor: recipe.color }}
-          title={recipe.name}
-        />
-      )}
-
+      {/* edit + delete: hidden until hover, sit to the LEFT of the tag */}
       <button
         onClick={startEdit}
         aria-label="Edit item"
-        className={`text-stone-light opacity-0 transition group-hover:opacity-100 hover:text-ink ${recipe ? "" : "ml-auto"}`}
+        className="ml-auto text-stone-light opacity-0 transition group-hover:opacity-100 hover:text-ink"
       >
         <span className="text-xs uppercase tracking-wide">edit</span>
       </button>
@@ -133,6 +129,16 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
       >
         <span className="text-xs uppercase tracking-wide">×</span>
       </button>
+
+      {/* recipe tag: persistent, always anchored far right */}
+      {recipe && (
+        <span
+          className="shrink-0 rounded-full px-2 py-0.5 text-[10px]"
+          style={{ color: recipe.color, backgroundColor: `${recipe.color}22` }}
+        >
+          {recipe.name}
+        </span>
+      )}
     </li>
   );
 }

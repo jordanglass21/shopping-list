@@ -1,10 +1,8 @@
 export const RECIPE_COLORS = [
-  "#9EA49B", // sage
-  "#B19F8A", // taupe
-  "#A9857A", // clay
+  "#7E9384", // eucalyptus (green)
+  "#B19F8A", // taupe (warm neutral)
+  "#A9857A", // clay (terracotta)
   "#8B9BA6", // dusty blue
-  "#A08BA0", // mauve
-  "#7E9384", // eucalyptus
-  "#B98C6D", // ochre
-  "#9B7E86", // rosewood
+  "#A08BA0", // mauve (purple)
+  "#B98C6D", // ochre (warm orange)
 ];
