@@ -39,7 +39,7 @@ export default function Home() {
 
   const loadedTemplate = lists.find((l) => l.id === loadedTemplateId);
   const displayName = loadedTemplate?.name ?? currentList?.name ?? "My List";
-  const { items, categories, recipes, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory, clearList } =
+  const { items, categories, recipes, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory, updateItem, clearList } =
     useItems(currentListId);
 
   const [newName, setNewName] = useState("");
@@ -272,7 +272,7 @@ export default function Home() {
                       recipes={recipes}
                       onToggle={toggleItem}
                       onDelete={deleteItem}
-                      onChangeCategory={updateCategory}
+                      onUpdate={updateItem}
                     />
                   ))}
                 </ul>

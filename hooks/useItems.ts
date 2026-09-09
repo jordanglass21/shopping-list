@@ -141,5 +141,24 @@ export function useItems(currentListId: number | null) {
         }
     }
 
-    return { items, categories, recipes, loading, addItem, toggleItem, deleteItem, updateCategory, clearList };
+    async function updateItem(id: number, name: string, quantity: string | null, category_id: number | null) {
+        const previous = items;
+        setItems((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, name, quantity, category_id } : item
+            )
+        );
+
+        const { error } = await supabase
+            .from("items")
+            .update({ name, quantity, category_id })
+            .eq("id", id);
+
+        if (error) {
+            console.error("Failed to update item:", error.message);
+            setItems(previous); // roll back
+        }
+    }
+
+    return { items, categories, recipes, loading, addItem, toggleItem, deleteItem, updateCategory, updateItem, clearList };
 }
