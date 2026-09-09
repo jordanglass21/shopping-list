@@ -73,7 +73,6 @@ export function RecipeImport({
                     <>
                         <div className="mb-6 flex items-start justify-between">
                             <div>
-                                <p className="mb-1 text-[10px] uppercase tracking-[0.2em] text-stone">Recipe</p>
                                 <h2 className="font-serif text-2xl text-ink">Import a recipe</h2>
                             </div>
                             <button onClick={onClose} className="text-xs uppercase tracking-wide text-stone hover:text-ink">
