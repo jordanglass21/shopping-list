@@ -1,26 +1,36 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces */
+  --cream: #F4F4F2;        /* page background */
+  --cream-raised: #FBFBFA; /* subtly raised (inputs, if needed) */
+
+  /* Ink / text */
+  --ink: #26241F;          /* primary text, title, signature lines */
+  --ink-soft: #7C7869;     /* active/secondary text */
+
+  /* Greys (warm-toned) */
+  --stone: #9A9488;        /* category labels, muted accents */
+  --stone-light: #B8B4A8;  /* quantities, checked text, dot borders */
+  --hairline: #E4E2DC;     /* dividers between items */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-cream: var(--cream);
+  --color-cream-raised: var(--cream-raised);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-stone: var(--stone);
+  --color-stone-light: var(--stone-light);
+  --color-hairline: var(--hairline);
+
   --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-serif);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
 }

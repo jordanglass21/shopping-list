@@ -18,7 +18,6 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
   const [editQty, setEditQty] = useState(item.quantity ?? "");
   const [editCat, setEditCat] = useState<number | null>(item.category_id);
 
-  const currentCategory = categories?.find((c) => c.id === item.category_id);
   const recipe = recipes?.find((r) => r.id === item.recipe_id);
 
   function startEdit() {
@@ -29,27 +28,26 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
   }
 
   function saveEdit() {
-    if (!editName.trim()) return; // don't allow empty name
+    if (!editName.trim()) return;
     onUpdate(item.id, editName.trim(), editQty.trim() || null, editCat);
     setIsEditing(false);
   }
 
-  // --- EDIT MODE ---
   if (isEditing) {
     return (
-      <li className="flex flex-col gap-2 rounded-2xl bg-white px-4 py-3">
+      <li className="flex flex-col gap-2 border-b border-hairline py-3">
         <div className="flex gap-2">
           <input
             autoFocus
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
-            className="flex-1 rounded-lg bg-stone-50 px-2 py-1 text-sm text-stone-800 outline-none focus:ring-2 focus:ring-amber-400"
+            className="flex-1 border-b border-stone-light bg-transparent pb-1 text-ink outline-none focus:border-ink"
             placeholder="Item"
           />
           <input
             value={editQty}
             onChange={(e) => setEditQty(e.target.value)}
-            className="w-20 rounded-lg bg-stone-50 px-2 py-1 text-sm text-stone-600 outline-none focus:ring-2 focus:ring-amber-400"
+            className="w-20 border-b border-stone-light bg-transparent pb-1 text-sm text-ink-soft outline-none focus:border-ink"
             placeholder="Qty"
           />
         </div>
@@ -57,7 +55,7 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
           <select
             value={editCat ?? ""}
             onChange={(e) => setEditCat(e.target.value ? Number(e.target.value) : null)}
-            className="flex-1 rounded-lg border-0 bg-stone-100 px-2 py-1 text-xs text-stone-600 outline-none focus:ring-2 focus:ring-amber-400"
+            className="flex-1 bg-transparent text-xs text-ink-soft outline-none"
           >
             <option value="">No category</option>
             {categories?.map((cat) => (
@@ -68,13 +66,13 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
           </select>
           <button
             onClick={saveEdit}
-            className="rounded-lg bg-amber-500 px-3 py-1 text-xs text-white transition hover:bg-amber-600"
+            className="text-xs uppercase tracking-wide text-ink underline underline-offset-4"
           >
             Save
           </button>
           <button
             onClick={() => setIsEditing(false)}
-            className="rounded-lg bg-stone-200 px-3 py-1 text-xs text-stone-600 transition hover:bg-stone-300"
+            className="text-xs uppercase tracking-wide text-stone"
           >
             Cancel
           </button>
@@ -83,53 +81,57 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
     );
   }
 
-  // --- DISPLAY MODE ---
   return (
-    <li
-      className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3"
-      style={recipe ? { borderLeft: `4px solid ${recipe.color}` } : undefined}
+    <li className="group flex items-center gap-3 border-b border-hairline py-2.5">      <button
+      onClick={() => onToggle(item.id, !item.checked)}
+      aria-label={item.checked ? "Mark as not bought" : "Mark as bought"}
+      className="shrink-0"
     >
-      <button
-        onClick={() => onToggle(item.id, !item.checked)}
-        aria-label={item.checked ? "Mark as not bought" : "Mark as bought"}
+      <span
         className={
           item.checked
-            ? "flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-xs text-white"
-            : "h-5 w-5 rounded-full border-2 border-stone-300 transition hover:border-amber-400"
+            ? "block h-[9px] w-[9px] rounded-full bg-neutral-300"
+            : "block h-[9px] w-[9px] rounded-full border-[1.5px] border-stone-light transition hover:border-ink"
+        }
+      />
+    </button>
+
+      <span
+        className={
+          item.checked
+            ? "text-[15px] text-neutral-500 line-through decoration-neutral-400"
+            : "text-[15px] text-ink"
         }
       >
-        {item.checked && "✓"}
-      </button>
-
-      <span className={item.checked ? "text-stone-400 line-through" : "text-stone-800"}>
         {item.name}
       </span>
 
-      {item.quantity && <span className="text-sm text-stone-400">· {item.quantity}</span>}
+      {item.quantity && (
+        <span className="text-sm text-stone-light">{item.quantity}</span>
+      )}
 
       {recipe && (
         <span
-          className="ml-auto rounded px-1.5 py-0.5 text-[10px] font-medium"
-          style={{ backgroundColor: `${recipe.color}20`, color: recipe.color }}
-        >
-          {recipe.name}
-        </span>
+          className="ml-auto block h-2 w-2 shrink-0 rounded-full"
+          style={{ backgroundColor: recipe.color }}
+          title={recipe.name}
+        />
       )}
 
       <button
         onClick={startEdit}
         aria-label="Edit item"
-        className="text-stone-300 transition hover:text-amber-500"
+        className={`text-stone-light opacity-0 transition group-hover:opacity-100 hover:text-ink ${recipe ? "" : "ml-auto"}`}
       >
-        ✎
+        <span className="text-xs uppercase tracking-wide">edit</span>
       </button>
 
       <button
         onClick={() => onDelete(item.id)}
         aria-label="Delete item"
-        className="text-stone-300 transition hover:text-red-400"
+        className="text-stone-light opacity-0 transition group-hover:opacity-100 hover:text-ink"
       >
-        ✕
+        <span className="text-xs uppercase tracking-wide">×</span>
       </button>
     </li>
   );

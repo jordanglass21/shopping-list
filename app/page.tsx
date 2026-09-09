@@ -11,15 +11,13 @@ import { RecipeImport } from "@/components/RecipeImport";
 import { useRecipeImport } from "@/hooks/useRecipeImport";
 
 export default function Home() {
-
   const {
     lists,
     currentListId,
-    setCurrentListId,
     loading: listsLoading,
     saveAsTemplate,
     loadTemplate,
-    deleteList
+    deleteList,
   } = useLists();
 
   const [user, setUser] = useState<User | null>(null);
@@ -39,7 +37,8 @@ export default function Home() {
 
   const loadedTemplate = lists.find((l) => l.id === loadedTemplateId);
   const displayName = loadedTemplate?.name ?? currentList?.name ?? "My List";
-  const { items, categories, recipes, loading: itemsLoading, addItem, toggleItem, deleteItem, updateCategory, updateItem, clearList } =
+
+  const { items, categories, recipes, loading: itemsLoading, addItem, toggleItem, deleteItem, updateItem, clearList } =
     useItems(currentListId);
 
   const [newName, setNewName] = useState("");
@@ -85,7 +84,7 @@ export default function Home() {
     if (!name || !name.trim()) return;
 
     const template = await saveAsTemplate(name.trim(), currentListId);
-    if (template) setLoadedTemplateId(template.id);   // ← now "linked" to the saved list
+    if (template) setLoadedTemplateId(template.id);
   }
 
   async function handleLoadTemplate(templateId: number) {
@@ -95,7 +94,7 @@ export default function Home() {
 
   async function handleClear() {
     if (items.length === 0) return;
-    const ok = window.confirm("Are you sure you want to clear the entire List?");
+    const ok = window.confirm("Are you sure you want to clear the entire list?");
     if (!ok) return;
 
     await clearList();
@@ -109,24 +108,16 @@ export default function Home() {
     setLoadedTemplateId(null);
   }
 
-  async function handleDeleteList(id: number, name: string) {
-    const ok = window.confirm(`Delete saved list "${name}"? This can't be undone.`);
-    if (ok) await deleteList(id);
-  }
-
   async function handleDeleteLoadedList() {
     if (loadedTemplateId == null) return;
     const tmpl = templates.find((t) => t.id === loadedTemplateId);
     if (!tmpl) return;
 
-    const ok = window.confirm(
-      `Delete "${tmpl.name}" and clear the current list?`
-    );
+    const ok = window.confirm(`Delete "${tmpl.name}" and clear the current list?`);
     if (!ok) return;
 
     if (currentListId != null) {
       await clearList(currentListId);
-      // Reset the working list's name and unlink it, so the title returns to default
       await supabase
         .from("lists")
         .update({ name: "My List", source_template_id: null })
@@ -147,7 +138,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-stone-100 flex items-center justify-center text-stone-400">
+      <main className="flex min-h-screen items-center justify-center bg-cream text-stone">
         Loading…
       </main>
     );
@@ -155,45 +146,46 @@ export default function Home() {
   if (!user) return null;
 
   return (
-    <main className="min-h-screen bg-stone-100 px-4 py-8">
+    <main className="min-h-screen bg-cream px-5 py-10">
       <div className="mx-auto max-w-lg">
         {/* Header */}
-        <div className="mb-1 flex items-center justify-between">
-          <h1 className="text-2xl font-medium text-stone-800">{displayName}</h1>
-          <div className="flex items-center gap-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-sm font-medium text-white">
-              {items.length}
-            </span>
-            <button onClick={handleLogout} className="text-sm text-stone-400 hover:text-stone-600">
-              Log out
-            </button>
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-stone">
+              Shopping
+            </p>
+            <h1 className="font-serif text-4xl leading-none text-ink">
+              {displayName}
+            </h1>
+          </div>
+          <div className="pt-1 text-right">
+            <div className="font-serif text-2xl leading-none text-ink">
+              {items.filter((i) => !i.checked).length}
+            </div>
+            <div className="mt-0.5 text-[9px] uppercase tracking-[0.12em] text-stone">
+              left
+            </div>
           </div>
         </div>
-        <p className="mb-6 text-xs text-stone-400">{user.email}</p>
 
-        {/* Saved lists bar */}
-        <div className="mb-6 flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setShowImport(true)}
-            className="rounded-lg bg-amber-500 px-3 py-1.5 text-sm text-white transition hover:bg-amber-600"
-          >
+        <button
+          onClick={handleLogout}
+          className="mb-6 mt-3 text-[10px] uppercase tracking-wide text-stone hover:text-ink-soft"
+        >
+          Log out · {user.email}
+        </button>
+
+        {/* Actions bar */}
+        <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-hairline pb-4">
+          <button onClick={handleSaveAs} className="text-xs uppercase tracking-wide text-ink-soft hover:text-ink">
+            Save as
+          </button>
+          <button onClick={() => setShowImport(true)} className="text-xs uppercase tracking-wide text-ink-soft hover:text-ink">
             Import recipe
           </button>
-
-          <button
-            onClick={handleSaveAs}
-            className="rounded-lg bg-stone-800 px-3 py-1.5 text-sm text-white transition hover:bg-stone-700"
-          >
-            Save
-          </button>
-
-          <button
-            onClick={handleClear}
-            className="rounded-lg bg-stone-200 px-3 py-1.5 text-sm text-stone-700 transition hover:bg-red-100 hover:text-red-600"
-          >
+          <button onClick={handleClear} className="text-xs uppercase tracking-wide text-ink-soft hover:text-ink">
             Clear
           </button>
-
 
           {templates.length > 0 && (
             <select
@@ -202,9 +194,9 @@ export default function Home() {
                 const id = Number(e.target.value);
                 if (id) handleLoadTemplate(id);
               }}
-              className="rounded-lg bg-white px-3 py-1.5 text-sm text-stone-600 outline-none focus:ring-2 focus:ring-amber-400"
+              className="bg-transparent text-xs uppercase tracking-wide text-ink-soft outline-none hover:text-ink"
             >
-              <option value="">Load saved list…</option>
+              <option value="">Load saved</option>
               {templates.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name}
@@ -216,54 +208,48 @@ export default function Home() {
           {loadedTemplateId != null && (
             <button
               onClick={handleDeleteLoadedList}
-              className="rounded-lg bg-stone-200 px-3 py-1.5 text-sm text-stone-700 transition hover:bg-red-100 hover:text-red-600"
-              aria-label="Delete this saved list"
+              className="text-xs uppercase tracking-wide text-stone hover:text-ink"
               title="Delete this saved list"
             >
-              Delete
+              Delete list
             </button>
           )}
         </div>
 
         {/* Add item */}
-        <div className="mb-6 flex gap-2">
+        <div className="mb-8 flex items-center gap-3 border-b border-ink pb-2">
+          <span className="text-ink-soft">+</span>
           <input
-            placeholder="Add something…"
+            placeholder="Add an item"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            className="flex-1 rounded-xl bg-white px-4 py-2.5 text-stone-800 placeholder:text-stone-400 outline-none focus:ring-2 focus:ring-amber-400"
+            className="flex-1 bg-transparent text-ink placeholder:text-stone outline-none"
           />
           <input
-            placeholder="Qty"
+            placeholder="qty"
             value={newQty}
             onChange={(e) => setNewQty(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            className="w-16 rounded-xl bg-white px-3 py-2.5 text-stone-800 placeholder:text-stone-400 outline-none focus:ring-2 focus:ring-amber-400"
+            className="w-14 bg-transparent text-right text-sm text-ink-soft placeholder:text-stone outline-none"
           />
-          <button
-            onClick={handleAdd}
-            className="flex w-11 items-center justify-center rounded-xl bg-amber-500 text-white transition hover:bg-amber-600 active:scale-95"
-          >
-            +
-          </button>
         </div>
 
         {/* List */}
         {itemsLoading || listsLoading ? (
-          <p className="text-stone-400">Loading items…</p>
+          <p className="text-stone">Loading items…</p>
         ) : items.length === 0 ? (
-          <div className="rounded-2xl bg-white px-4 py-10 text-center text-stone-400">
+          <p className="py-10 text-center text-stone">
             Nothing here yet. Add your first item above.
-          </div>
+          </p>
         ) : (
           <div className="space-y-6">
             {grouped.map((group) => (
               <div key={group.category.id}>
-                <p className="mb-2 px-1 text-xs font-medium uppercase tracking-wide text-stone-500">
+                <p className="mb-2 text-[10px] uppercase tracking-[0.18em] text-stone">
                   {group.category.name}
                 </p>
-                <ul className="space-y-2">
+                <ul>
                   {group.items.map((item) => (
                     <ItemRow
                       key={item.id}

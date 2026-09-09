@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { parseRecipe, type ParsedIngredient } from "@/lib/parseRecipe";
+import { RECIPE_COLORS } from "@/lib/recipeColors";
 
 type RecipeImportProps = {
     categories: { id: number; name: string }[];
@@ -10,7 +11,7 @@ type RecipeImportProps = {
         recipeName: string,
         ingredients: ParsedIngredient[],
         listId: number,
-        categories: { id: number; name: string }[]
+        color: string
     ) => Promise<unknown>;
     onClose: () => void;
     onDone: () => void;
@@ -30,6 +31,7 @@ export function RecipeImport({
     // Track which parsed rows the user wants to keep
     const [keep, setKeep] = useState<boolean[]>([]);
     const [saving, setSaving] = useState(false);
+    const [color, setColor] = useState(RECIPE_COLORS[0]);
 
     function handleParse() {
         if (!rawText.trim()) return;
@@ -57,7 +59,7 @@ export function RecipeImport({
             recipeName.trim() || "Recipe",
             chosen,
             currentListId,
-            categories
+            color
         );
         setSaving(false);
         onDone();
@@ -65,57 +67,80 @@ export function RecipeImport({
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center">
-            <div className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-stone-100 p-5 sm:rounded-2xl">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 sm:items-center">
+            <div className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-cream p-6 sm:rounded-2xl">
                 {stage === "input" ? (
                     <>
-                        <div className="mb-4 flex items-center justify-between">
-                            <h2 className="text-lg font-medium text-stone-800">Import a recipe</h2>
-                            <button onClick={onClose} className="text-stone-400 hover:text-stone-600">
-                                ✕
+                        <div className="mb-6 flex items-start justify-between">
+                            <div>
+                                <p className="mb-1 text-[10px] uppercase tracking-[0.2em] text-stone">Recipe</p>
+                                <h2 className="font-serif text-2xl text-ink">Import a recipe</h2>
+                            </div>
+                            <button onClick={onClose} className="text-xs uppercase tracking-wide text-stone hover:text-ink">
+                                Close
                             </button>
                         </div>
 
                         <input
-                            placeholder="Recipe name (e.g. Sunday Chili)"
+                            placeholder="Recipe name"
                             value={recipeName}
                             onChange={(e) => setRecipeName(e.target.value)}
-                            className="mb-3 w-full rounded-xl bg-white px-4 py-2.5 text-stone-800 placeholder:text-stone-400 outline-none focus:ring-2 focus:ring-amber-400"
+                            className="mb-5 w-full border-b border-stone-light bg-transparent pb-2 text-ink placeholder:text-stone outline-none focus:border-ink"
                         />
 
+                        <div className="mb-5 flex items-center gap-2">
+                            <span className="mr-1 text-[10px] uppercase tracking-wide text-stone">Colour</span>
+                            {RECIPE_COLORS.map((c) => (
+                                <button
+                                    key={c}
+                                    onClick={() => setColor(c)}
+                                    aria-label={`Choose color ${c}`}
+                                    className="h-5 w-5 rounded-full transition"
+                                    style={{
+                                        backgroundColor: c,
+                                        outline: color === c ? "1.5px solid var(--ink)" : "none",
+                                        outlineOffset: "2px",
+                                    }}
+                                />
+                            ))}
+                        </div>
+
                         <textarea
-                            placeholder={"Paste ingredients, one per line:\n2 cups flour\n3 eggs\n1 onion, diced\nsalt to taste"}
+                            placeholder={"Paste ingredients, one per line\n\n2 cups flour\n3 eggs\n1 onion, diced\nsalt to taste"}
                             value={rawText}
                             onChange={(e) => setRawText(e.target.value)}
                             rows={8}
-                            className="mb-4 w-full rounded-xl bg-white px-4 py-3 text-stone-800 placeholder:text-stone-400 outline-none focus:ring-2 focus:ring-amber-400"
+                            className="mb-6 w-full resize-none border-b border-stone-light bg-transparent pb-2 text-ink placeholder:text-stone outline-none focus:border-ink"
                         />
 
                         <button
                             onClick={handleParse}
                             disabled={!rawText.trim()}
-                            className="w-full rounded-xl bg-amber-500 py-2.5 text-white transition hover:bg-amber-600 disabled:opacity-50"
+                            className="text-xs uppercase tracking-wide text-ink underline underline-offset-4 disabled:text-stone disabled:no-underline"
                         >
-                            Parse ingredients
+                            Parse ingredients →
                         </button>
                     </>
                 ) : (
                     <>
-                        <div className="mb-1 flex items-center justify-between">
-                            <h2 className="text-lg font-medium text-stone-800">Review ingredients</h2>
-                            <button onClick={onClose} className="text-stone-400 hover:text-stone-600">
-                                ✕
+                        <div className="mb-1 flex items-start justify-between">
+                            <div>
+                                <p className="mb-1 text-[10px] uppercase tracking-[0.2em] text-stone">Review</p>
+                                <h2 className="font-serif text-2xl text-ink">Check the ingredients</h2>
+                            </div>
+                            <button onClick={onClose} className="text-xs uppercase tracking-wide text-stone hover:text-ink">
+                                Close
                             </button>
                         </div>
-                        <p className="mb-4 text-xs text-stone-500">
+                        <p className="mb-5 mt-2 text-xs text-stone">
                             Flagged rows we weren&apos;t sure about — edit or uncheck before adding.
                         </p>
 
-                        <ul className="mb-4 space-y-2">
+                        <ul className="mb-6">
                             {parsed.map((ing, i) => (
                                 <li
                                     key={i}
-                                    className={`flex items-center gap-2 rounded-xl bg-white p-2 ${!ing.confident ? "ring-2 ring-amber-300" : ""
+                                    className={`flex items-center gap-3 border-b border-hairline py-2 ${!ing.confident ? "pl-2 border-l-2 border-l-stone-light" : ""
                                         }`}
                                 >
                                     <input
@@ -124,26 +149,26 @@ export function RecipeImport({
                                         onChange={() =>
                                             setKeep((prev) => prev.map((k, j) => (j === i ? !k : k)))
                                         }
-                                        className="h-4 w-4 accent-amber-500"
+                                        className="h-3.5 w-3.5 accent-ink"
                                     />
                                     <input
                                         value={ing.name}
                                         onChange={(e) => editRow(i, "name", e.target.value)}
-                                        className="flex-1 rounded-lg bg-stone-50 px-2 py-1 text-sm text-stone-800 outline-none focus:ring-1 focus:ring-amber-400"
+                                        className="flex-1 bg-transparent text-sm text-ink outline-none"
                                     />
                                     <input
                                         value={ing.quantity ?? ""}
                                         placeholder="qty"
                                         onChange={(e) => editRow(i, "quantity", e.target.value)}
-                                        className="w-20 rounded-lg bg-stone-50 px-2 py-1 text-sm text-stone-600 outline-none focus:ring-1 focus:ring-amber-400"
+                                        className="w-16 bg-transparent text-right text-sm text-stone outline-none placeholder:text-stone-light"
                                     />
                                     {ing.wasMeasure && (
-                                        <span className="text-[10px] text-stone-400" title="Cooking measure dropped">
+                                        <span className="text-[9px] uppercase tracking-wide text-stone-light" title="Cooking measure dropped">
                                             measure
                                         </span>
                                     )}
                                     {!ing.confident && (
-                                        <span className="text-amber-500" title="We weren't sure">
+                                        <span className="text-stone" title="We weren't sure">
                                             ⚠
                                         </span>
                                     )}
@@ -151,19 +176,19 @@ export function RecipeImport({
                             ))}
                         </ul>
 
-                        <div className="flex gap-2">
+                        <div className="flex items-center gap-5">
                             <button
                                 onClick={() => setStage("input")}
-                                className="rounded-xl bg-stone-200 px-4 py-2.5 text-stone-700 transition hover:bg-stone-300"
+                                className="text-xs uppercase tracking-wide text-stone hover:text-ink"
                             >
-                                Back
+                                ← Back
                             </button>
                             <button
                                 onClick={handleAdd}
                                 disabled={saving}
-                                className="flex-1 rounded-xl bg-amber-500 py-2.5 text-white transition hover:bg-amber-600 disabled:opacity-50"
+                                className="text-xs uppercase tracking-wide text-ink underline underline-offset-4 disabled:text-stone disabled:no-underline"
                             >
-                                {saving ? "Adding…" : "Add to list"}
+                                {saving ? "Adding…" : "Add to list →"}
                             </button>
                         </div>
                     </>
