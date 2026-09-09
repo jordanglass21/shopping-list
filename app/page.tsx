@@ -9,6 +9,7 @@ import { ItemRow } from "@/components/ItemRow";
 import type { User } from "@supabase/supabase-js";
 import { RecipeImport } from "@/components/RecipeImport";
 import { useRecipeImport } from "@/hooks/useRecipeImport";
+import { Dialog } from "@/components/Dialog";
 
 export default function Home() {
   const {
@@ -24,6 +25,15 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [showImport, setShowImport] = useState(false);
   const [loadedTemplateId, setLoadedTemplateId] = useState<number | null>(null);
+  const [dialog, setDialog] = useState<{
+    title: string;
+    message?: string;
+    inputDefault?: string | null;
+    inputPlaceholder?: string;
+    confirmLabel?: string;
+    destructive?: boolean;
+    onConfirm: (value: string) => void;
+  } | null>(null);
 
   const router = useRouter();
   const { importRecipe } = useRecipeImport();
@@ -74,17 +84,24 @@ export default function Home() {
     setNewQty("");
   }
 
-  async function handleSaveAs() {
+  function handleSaveAs() {
     if (currentListId == null) return;
     const itemWithRecipe = items.find((it) => it.recipe_id != null);
     const suggested = itemWithRecipe
       ? recipes.find((r) => r.id === itemWithRecipe.recipe_id)?.name ?? ""
       : "";
-    const name = window.prompt("Save this list as:", suggested);
-    if (!name || !name.trim()) return;
-
-    const template = await saveAsTemplate(name.trim(), currentListId);
-    if (template) setLoadedTemplateId(template.id);
+    setDialog({
+      title: "Save list as",
+      inputDefault: suggested,
+      inputPlaceholder: "List name",
+      confirmLabel: "Save",
+      onConfirm: async (name) => {
+        if (!name.trim()) return;
+        const template = await saveAsTemplate(name.trim(), currentListId);
+        if (template) setLoadedTemplateId(template.id);
+        setDialog(null);
+      },
+    });
   }
 
   async function handleLoadTemplate(templateId: number) {
@@ -92,39 +109,49 @@ export default function Home() {
     setLoadedTemplateId(templateId);
   }
 
-  async function handleClear() {
+  function handleClear() {
     if (items.length === 0) return;
-    const ok = window.confirm("Are you sure you want to clear the entire list?");
-    if (!ok) return;
-
-    await clearList();
-
-    if (currentListId != null) {
-      await supabase
-        .from("lists")
-        .update({ name: "My List", source_template_id: null })
-        .eq("id", currentListId);
-    }
-    setLoadedTemplateId(null);
+    setDialog({
+      title: "Clear the list?",
+      message: "This removes every item. It can't be undone.",
+      confirmLabel: "Clear",
+      destructive: true,
+      onConfirm: async () => {
+        await clearList();
+        if (currentListId != null) {
+          await supabase
+            .from("lists")
+            .update({ name: "My List", source_template_id: null })
+            .eq("id", currentListId);
+        }
+        setLoadedTemplateId(null);
+        setDialog(null);
+      },
+    });
   }
 
-  async function handleDeleteLoadedList() {
+  function handleDeleteLoadedList() {
     if (loadedTemplateId == null) return;
     const tmpl = templates.find((t) => t.id === loadedTemplateId);
     if (!tmpl) return;
-
-    const ok = window.confirm(`Delete "${tmpl.name}" and clear the current list?`);
-    if (!ok) return;
-
-    if (currentListId != null) {
-      await clearList(currentListId);
-      await supabase
-        .from("lists")
-        .update({ name: "My List", source_template_id: null })
-        .eq("id", currentListId);
-    }
-    await deleteList(tmpl.id);
-    setLoadedTemplateId(null);
+    setDialog({
+      title: `Delete "${tmpl.name}"?`,
+      message: "This deletes the saved list and clears the current one.",
+      confirmLabel: "Delete",
+      destructive: true,
+      onConfirm: async () => {
+        if (currentListId != null) {
+          await clearList(currentListId);
+          await supabase
+            .from("lists")
+            .update({ name: "My List", source_template_id: null })
+            .eq("id", currentListId);
+        }
+        await deleteList(tmpl.id);
+        setLoadedTemplateId(null);
+        setDialog(null);
+      },
+    });
   }
 
   const grouped = categories
@@ -273,6 +300,19 @@ export default function Home() {
           onDone={() => window.location.reload()}
         />
       )}
+
+      <Dialog
+        open={dialog !== null}
+        title={dialog?.title ?? ""}
+        message={dialog?.message}
+        inputDefault={dialog?.inputDefault}
+        inputPlaceholder={dialog?.inputPlaceholder}
+        confirmLabel={dialog?.confirmLabel}
+        destructive={dialog?.destructive}
+        onConfirm={(value) => dialog?.onConfirm(value)}
+        onCancel={() => setDialog(null)}
+      />
+      
     </main>
   );
 }
