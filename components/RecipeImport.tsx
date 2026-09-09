@@ -140,8 +140,7 @@ export function RecipeImport({
                             {parsed.map((ing, i) => (
                                 <li
                                     key={i}
-                                    className={`flex items-center gap-3 border-b border-hairline py-2 ${!ing.confident ? "pl-2 border-l-2 border-l-stone-light" : ""
-                                        }`}
+                                    className="flex items-center gap-3 border-b border-hairline py-2"
                                 >
                                     <input
                                         type="checkbox"
@@ -163,13 +162,8 @@ export function RecipeImport({
                                         className="w-16 bg-transparent text-right text-sm text-stone outline-none placeholder:text-stone-light"
                                     />
                                     {ing.wasMeasure && (
-                                        <span className="text-[9px] uppercase tracking-wide text-stone-light" title="Cooking measure dropped">
+                                        <span className="text-[10px] italic text-neutral-300">
                                             measure
-                                        </span>
-                                    )}
-                                    {!ing.confident && (
-                                        <span className="text-stone" title="We weren't sure">
-                                            ⚠
                                         </span>
                                     )}
                                 </li>

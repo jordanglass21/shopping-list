@@ -110,6 +110,9 @@ function parseLine(raw: string): ParsedIngredient {
     name = name.split(",")[0].trim();
     // Strip preparation/descriptor words anywhere in the name
     name = stripPrepWords(name);
+    if (name.length > 0) {
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+    }
 
     // --- Measure vs. count decision ---
     let quantity: string | null = null;

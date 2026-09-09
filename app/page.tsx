@@ -246,7 +246,7 @@ export default function Home() {
           <div className="space-y-6">
             {grouped.map((group) => (
               <div key={group.category.id}>
-                <p className="mb-2 text-[10px] uppercase tracking-[0.18em] text-stone">
+                <p className="mb-2 text-[10px] uppercase tracking-[0.18em] text-neutral-400">
                   {group.category.name}
                 </p>
                 <ul>

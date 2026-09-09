@@ -53,6 +53,9 @@ export function useItems(currentListId: number | null) {
             data: { user },
         } = await supabase.auth.getUser();
         if (!user || currentListId == null) return;
+        if (name.length > 0) {
+            name = name.charAt(0).toUpperCase() + name.slice(1);
+        }
 
         // Guess the category name, then find its id
         const guessedName = guessCategory(name);
