@@ -86,38 +86,42 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
   return (
     <li className="group flex items-center gap-3 border-b border-hairline py-2.5">
       <button
+        type="button"
         onClick={() => onToggle(item.id, !item.checked)}
+        aria-pressed={item.checked}
         aria-label={item.checked ? "Mark as not bought" : "Mark as bought"}
-        className="shrink-0"
+        className="flex min-h-11 flex-1 items-center gap-3 text-left"
       >
+        <span className="flex h-11 w-5 shrink-0 items-center justify-center">
+          <span
+            className={
+              item.checked
+                ? "block h-[9px] w-[9px] rounded-full bg-neutral-300"
+                : "block h-[9px] w-[9px] rounded-full border-[1.5px] border-neutral-300 transition group-hover:border-ink"
+            }
+          />
+        </span>
+
         <span
           className={
             item.checked
-              ? "block h-[9px] w-[9px] rounded-full bg-neutral-300"
-              : "block h-[9px] w-[9px] rounded-full border-[1.5px] border-neutral-300 transition hover:border-ink"
+              ? "text-[15px] text-neutral-500 line-through decoration-neutral-300"
+              : "text-[15px] text-ink"
           }
-        />
+        >
+          {item.name}
+        </span>
+
+        {item.quantity && (
+          <span className="text-sm text-stone-light">{item.quantity}</span>
+        )}
       </button>
-
-      <span
-        className={
-          item.checked
-            ? "text-[15px] text-neutral-500 line-through decoration-neutral-300"
-            : "text-[15px] text-ink"
-        }
-      >
-        {item.name}
-      </span>
-
-      {item.quantity && (
-        <span className="text-sm text-stone-light">{item.quantity}</span>
-      )}
 
       {/* edit + delete: hidden until hover, sit to the LEFT of the tag */}
       <button
         onClick={startEdit}
         aria-label="Edit item"
-        className="ml-auto text-stone-light opacity-0 transition group-hover:opacity-100 hover:text-ink"
+        className="shrink-0 text-stone-light opacity-0 transition group-hover:opacity-100 hover:text-ink"
       >
         <span className="text-xs uppercase tracking-wide">edit</span>
       </button>
