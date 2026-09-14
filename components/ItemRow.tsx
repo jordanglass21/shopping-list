@@ -117,21 +117,45 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
         )}
       </button>
 
-      {/* edit + delete: hidden until hover, sit to the LEFT of the tag */}
+      {/* edit + delete: always visible on touch, hover-reveal on pointer devices */}
       <button
+        type="button"
         onClick={startEdit}
-        aria-label="Edit item"
-        className="shrink-0 text-stone-light opacity-0 transition group-hover:opacity-100 hover:text-ink"
+        aria-label={`Edit ${item.name}`}
+        className="flex h-11 w-9 shrink-0 items-center justify-center text-stone-light transition hover:text-ink [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
       >
-        <span className="text-xs uppercase tracking-wide">edit</span>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className="h-4 w-4"
+        >
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+        </svg>
       </button>
 
       <button
+        type="button"
         onClick={() => onDelete(item.id)}
-        aria-label="Delete item"
-        className="text-stone-light opacity-0 transition group-hover:opacity-100 hover:text-ink"
+        aria-label={`Delete ${item.name}`}
+        className="flex h-11 w-8 shrink-0 items-center justify-center text-stone-light transition hover:text-ink [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
       >
-        <span className="text-xs uppercase tracking-wide">×</span>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          aria-hidden="true"
+          className="h-3.5 w-3.5"
+        >
+          <path d="M5 5l14 14M19 5L5 19" />
+        </svg>
       </button>
 
       {/* recipe tag: persistent, always anchored far right */}
