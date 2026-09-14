@@ -96,8 +96,8 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
           <span
             className={
               item.checked
-                ? "block h-[9px] w-[9px] rounded-full bg-neutral-300"
-                : "block h-[9px] w-[9px] rounded-full border-[1.5px] border-neutral-300 transition group-hover:border-ink"
+                ? "block h-[9px] w-[9px] rounded-full bg-ink"
+                : "block h-[9px] w-[9px] rounded-full border-[1.5px] border-stone transition group-hover:border-ink"
             }
           />
         </span>
@@ -105,7 +105,7 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
         <span
           className={
             item.checked
-              ? "text-[15px] text-neutral-500 line-through decoration-neutral-300"
+              ? "text-[15px] text-ink-soft line-through decoration-ink-soft decoration-[1.5px]"
               : "text-[15px] text-ink"
           }
         >
