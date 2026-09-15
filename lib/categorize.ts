@@ -23,6 +23,7 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
     "tenderloin", "cod", "tilapia", "crab", "lobster", "scallop", "clam",
     "mussel", "oyster", "hot dog", "deli", "prosciutto", "pepperoni", "chorizo",
     "ground beef", "ground turkey", "ground pork", "ground chicken", "jerky",
+    "chuck",
   ],
   "Dairy & Eggs": [
     "milk", "cheese", "butter", "yogurt", "egg", "cream", "sour cream",
