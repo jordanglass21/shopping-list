@@ -143,7 +143,7 @@ export function ItemRow({ item, categories, recipes, onToggle, onDelete, onUpdat
         type="button"
         onClick={() => onDelete(item.id)}
         aria-label={`Delete ${item.name}`}
-        className="flex h-11 w-8 shrink-0 items-center justify-center text-stone-light transition hover:text-ink [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+        className="-ml-6 flex h-11 w-8 shrink-0 items-center justify-center text-stone-light transition hover:text-ink"
       >
         <svg
           viewBox="0 0 24 24"
