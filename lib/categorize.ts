@@ -22,8 +22,7 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
     "salmon", "tuna", "shrimp", "ham", "lamb", "veal", "ribs", "brisket",
     "tenderloin", "cod", "tilapia", "crab", "lobster", "scallop", "clam",
     "mussel", "oyster", "hot dog", "deli", "prosciutto", "pepperoni", "chorizo",
-    "ground beef", "ground turkey", "ground pork", "ground chicken", "jerky",
-    "chuck",
+    "ground beef", "ground turkey", "ground pork", "ground chicken", "chuck",
   ],
   "Dairy & Eggs": [
     "milk", "cheese", "butter", "yogurt", "egg", "cream", "sour cream",
@@ -52,7 +51,7 @@ const CATEGORY_KEYWORDS: Record<string, string[]> = {
     "chips", "crackers", "cookies", "candy", "chocolate", "popcorn", "pretzel",
     "nuts", "almonds", "cashews", "walnuts", "peanuts", "granola bar",
     "potato chips", "tortilla chips", "milk chocolate", "graham", "trail mix",
-    "fruit snack", "gummy", "gum",
+    "fruit snack", "gummy", "gum", "jerky",
   ],
   "Beverages": [
     "water", "juice", "soda", "coffee", "tea", "beer", "wine", "seltzer",
